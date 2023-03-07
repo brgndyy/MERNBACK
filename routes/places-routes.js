@@ -1,29 +1,17 @@
 const express = require("express");
+const HttpError = require("../models/http-error");
+const placesControllers = require("../controllers/places-controller");
 
 const router = express.Router();
 
-const DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Building",
-    description: "One of the most famous sky scrapers in the world!",
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516,
-    },
-    address: "20 W 34th St, New York, NY 10001",
-    creator: "u1",
-  },
-];
+router.get("/:placeId", placesControllers.getPlaceById);
 
-router.get("/:id", (req, res, next) => {
-  const placeId = req.params.id;
+router.get("/user/:userId", placesControllers.getUserById);
 
-  const place = DUMMY_PLACES.find((p) => {
-    return p.id === placeId;
-  });
+router.post("/", placesControllers.createPlace);
 
-  res.json({ place: place });
-});
+router.patch("/:placeId", placesControllers.updatePlaceById);
+
+router.delete("/:placeId", placesControllers.deletePlace);
 
 module.exports = router;
