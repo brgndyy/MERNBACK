@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const Place = require("./place");
+const User = require("./user");
 
 const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/config.json")[env];
@@ -15,9 +16,12 @@ const sequelize = new Sequelize(
 db.sequelize = sequelize;
 
 db.Place = Place;
+db.User = User;
 
 Place.init(sequelize);
+User.init(sequelize);
 
 Place.associate(db);
+User.associate(db);
 
 module.exports = db;
