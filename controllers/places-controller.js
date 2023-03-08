@@ -92,6 +92,8 @@ const createPlace = async (req, res, next) => {
     ],
   });
 
+  console.log(user.dataValues.Places);
+
   const newPlace = await Place.create({
     place_id: uuid(),
     title: req.body.title,
