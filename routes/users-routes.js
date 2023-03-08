@@ -1,5 +1,5 @@
 const express = require("express");
-const HttpError = require("../models/http-error");
+const HttpError = require("../error/http-error");
 const { check } = require("express-validator");
 const userController = require("../controllers/users-controller");
 

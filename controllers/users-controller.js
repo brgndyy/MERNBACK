@@ -1,5 +1,5 @@
 const uuid4 = require("uuid4");
-const HttpError = require("../models/http-error");
+const HttpError = require("../error/http-error");
 const { validationResult } = require("express-validator");
 
 const DUMMY_USERS = [
