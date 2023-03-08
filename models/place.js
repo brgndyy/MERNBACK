@@ -4,6 +4,10 @@ module.exports = class Place extends Sequelize.Model {
   static init(sequelize) {
     return super.init(
       {
+        place_id: {
+          type: Sequelize.STRING(100),
+          allowNull: false,
+        },
         title: {
           type: Sequelize.STRING(100),
           allowNull: false,
@@ -13,15 +17,15 @@ module.exports = class Place extends Sequelize.Model {
           allowNull: false,
         },
         image: {
-          type: Sequelize.STRING(100),
+          type: Sequelize.STRING(1234),
           allowNull: false,
         },
         lat: {
-          type: Sequelize.DECIMAL(20, 30),
+          type: Sequelize.DECIMAL(30, 20),
           allowNull: false,
         },
         lng: {
-          type: Sequelize.DECIMAL(20, 30),
+          type: Sequelize.DECIMAL(30, 20),
           allowNull: false,
         },
         creator: {
@@ -29,7 +33,7 @@ module.exports = class Place extends Sequelize.Model {
           allowNull: false,
         },
         address: {
-          type: Sequelize.STRING(40),
+          type: Sequelize.STRING(100),
           allowNull: false,
         },
       },
