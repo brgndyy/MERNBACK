@@ -2,6 +2,7 @@ const HttpError = require("../error/http-error");
 const uuid = require("uuid4");
 const { validationResult } = require("express-validator");
 const getCoordsForAddress = require("../util/location");
+const { Place } = require("../models");
 
 let DUMMY_PLACES = [
   {
@@ -52,22 +53,19 @@ const createPlace = async (req, res, next) => {
   let coordinates;
   try {
     coordinates = await getCoordsForAddress(address);
+    const newPlace = await Place.create({
+      title: title,
+      description: description,
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/800px-Empire_State_Building_%28aerial_view%29.jpg",
+      lat: coordinates.lat,
+      lng: coordinates.lng,
+      creator: creator,
+      address: address,
+    });
   } catch (error) {
     return next(error);
   }
-
-  const createdPlace = {
-    id: uuid(),
-    title,
-    description,
-    location: coordinates,
-    address,
-    creator,
-  };
-
-  DUMMY_PLACES.push(createdPlace);
-
-  res.status(201).json({ place: createdPlace });
 };
 
 const updatePlaceById = (req, res, next) => {
