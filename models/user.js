@@ -44,5 +44,8 @@ module.exports = class User extends Sequelize.Model {
       }
     );
   }
-  static associate(db) {}
+  // foreignKey 가 참조하는 다른 테이블의 컬럼은 꼭 Primary Key 여야한다.
+  static associate(db) {
+    db.User.hasMany(db.Place, { foreignKey: "creator", sourceKey: "id" });
+  }
 };

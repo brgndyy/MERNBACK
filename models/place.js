@@ -28,10 +28,6 @@ module.exports = class Place extends Sequelize.Model {
           type: Sequelize.DECIMAL(30, 20),
           allowNull: false,
         },
-        creator: {
-          type: Sequelize.STRING(40),
-          allowNull: false,
-        },
         address: {
           type: Sequelize.STRING(100),
           allowNull: false,
@@ -49,5 +45,7 @@ module.exports = class Place extends Sequelize.Model {
       }
     );
   }
-  static associate(db) {}
+  static associate(db) {
+    db.Place.belongsTo(db.User, { foreignKey: "creator", targetKey: "id" });
+  }
 };

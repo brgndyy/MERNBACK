@@ -3,7 +3,6 @@ const uuid = require("uuid4");
 const { validationResult } = require("express-validator");
 const getCoordsForAddress = require("../util/location");
 const { Place } = require("../models");
-const uuid4 = require("uuid4");
 
 let DUMMY_PLACES = [
   {
@@ -102,7 +101,7 @@ const updatePlaceById = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    throw new HttpError("Invaild Inputs passed, please check your data.", 422);
+    return new HttpError("Invaild Inputs passed, please check your data.", 422);
   }
   const { title, description } = req.body;
   const placeId = req.params.placeId;
