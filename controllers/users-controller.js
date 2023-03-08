@@ -68,7 +68,6 @@ const signUp = async (req, res, next) => {
     email: email,
     image: "https://live.staticflickr.com/65535/52699397601_dd2feef4d4_b.jpg",
     password: password,
-    places,
   });
 
   res.status(201).json({ user: createdUser });

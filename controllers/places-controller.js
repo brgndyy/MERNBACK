@@ -2,7 +2,7 @@ const HttpError = require("../error/http-error");
 const uuid = require("uuid4");
 const { validationResult } = require("express-validator");
 const getCoordsForAddress = require("../util/location");
-const { Place } = require("../models");
+const { Place, User } = require("../models");
 
 let DUMMY_PLACES = [
   {
@@ -72,15 +72,25 @@ const getPlacesByUserId = async (req, res, next) => {
 };
 
 const createPlace = async (req, res, next) => {
-  const { title, description, address, creator } = req.body;
-
   let coordinates;
+  let { address } = req.body;
   try {
     coordinates = await getCoordsForAddress(address);
   } catch (err) {
     console.error(err);
     next(err);
   }
+
+  const user = await User.findOne({
+    include: [
+      {
+        model: Place,
+        where: {
+          // 로그인한 사람이 되도록
+        },
+      },
+    ],
+  });
 
   const newPlace = await Place.create({
     place_id: uuid(),
@@ -90,7 +100,7 @@ const createPlace = async (req, res, next) => {
       "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg",
     lat: coordinates.lat,
     lng: coordinates.lng,
-    creator: req.body.creator,
+    creator: user.dataValues.id, // User 테이블의 id 를 가져와야함
     address: address,
   });
 
