@@ -9,11 +9,8 @@ const getPlaceById = async (req, res, next) => {
   let place;
   try {
     place = await Place.findOne({
-      include: {
-        model: User,
-        where: {
-          place_id: placeId,
-        },
+      where: {
+        id: placeId,
       },
     });
   } catch (err) {
@@ -37,7 +34,7 @@ const getPlacesByUserId = async (req, res, next) => {
   let places;
 
   try {
-    places = await Place.findOne({
+    places = await Place.findAll({
       where: {
         creator: userId,
       },
@@ -62,22 +59,30 @@ const getPlacesByUserId = async (req, res, next) => {
 
 const createPlace = async (req, res, next) => {
   let coordinates;
-  console.log(req.body);
-  let { address, id } = req.body;
+  let { title, description, address, id } = req.body;
   try {
     coordinates = await getCoordsForAddress(address);
+    const user = await User.findOne({
+      include: [
+        {
+          model: Place,
+          where: {
+            id: id,
+          },
+        },
+      ],
+    });
 
-    console.log(coordinates);
     const newPlace = await Place.create({
       place_id: uuid(),
-      title: req.body.title,
-      description: req.body.description,
+      title,
+      description,
       image:
         "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg",
       lat: coordinates.lat,
       lng: coordinates.lng,
       creator: id,
-      address: address,
+      address,
     });
 
     res.status(201).json({ place: newPlace });
@@ -89,8 +94,6 @@ const createPlace = async (req, res, next) => {
 
     return next(err);
   }
-
-  // 아니면 source Key 를 id 가 아니라,
 };
 
 const updatePlaceById = async (req, res, next) => {
@@ -101,12 +104,13 @@ const updatePlaceById = async (req, res, next) => {
   }
   const { title, description } = req.body;
   const placeId = req.params.placeId;
+  console.log(placeId);
 
   let place;
   try {
     place = await Place.findOne({
       where: {
-        place_id: placeId,
+        id: placeId,
       },
     });
   } catch (err) {
@@ -142,7 +146,7 @@ const deletePlace = async (req, res, next) => {
   try {
     place = await Place.findOne({
       where: {
-        place_id: placeId,
+        id: placeId,
       },
     });
     await place.destroy();
