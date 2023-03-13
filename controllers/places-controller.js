@@ -104,7 +104,6 @@ const updatePlaceById = async (req, res, next) => {
   }
   const { title, description } = req.body;
   const placeId = req.params.placeId;
-  console.log(placeId);
 
   let place;
   try {
@@ -140,8 +139,10 @@ const updatePlaceById = async (req, res, next) => {
 
 const deletePlace = async (req, res, next) => {
   const placeId = req.params.placeId;
+  // const { id } = req.body;
 
   let place;
+  // let filtredPlaces;
 
   try {
     place = await Place.findOne({
@@ -150,6 +151,12 @@ const deletePlace = async (req, res, next) => {
       },
     });
     await place.destroy();
+
+    // filtredPlaces = await Place.findAll({
+    //   where: {
+    //     id: id,
+    //   },
+    // });
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place.",
