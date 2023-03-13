@@ -3,15 +3,6 @@ const HttpError = require("../error/http-error");
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
 
-const DUMMY_USERS = [
-  {
-    id: "u1",
-    name: "BRGNDY",
-    email: "test@test.com",
-    password: "testers",
-  },
-];
-
 const getUsers = async (req, res, next) => {
   let users;
   try {
@@ -100,7 +91,7 @@ const login = async (req, res, next) => {
     return next(error);
   }
 
-  res.json({ message: "Logged in!" });
+  res.json({ message: "Logged in!", user: existingUser });
 };
 
 exports.getUsers = getUsers;

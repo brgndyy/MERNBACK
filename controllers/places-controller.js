@@ -4,27 +4,16 @@ const { validationResult } = require("express-validator");
 const getCoordsForAddress = require("../util/location");
 const { Place, User } = require("../models");
 
-let DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire State Building",
-    description: "One of the most famous sky scrapers in the world!",
-    location: {
-      lat: 40.7484474,
-      lng: -73.9871516,
-    },
-    address: "20 W 34th St, New York, NY 10001",
-    creator: "u1",
-  },
-];
-
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.placeId;
   let place;
   try {
     place = await Place.findOne({
-      where: {
-        place_id: placeId,
+      include: {
+        model: User,
+        where: {
+          place_id: placeId,
+        },
       },
     });
   } catch (err) {
@@ -73,40 +62,35 @@ const getPlacesByUserId = async (req, res, next) => {
 
 const createPlace = async (req, res, next) => {
   let coordinates;
-  let { address } = req.body;
+  console.log(req.body);
+  let { address, id } = req.body;
   try {
     coordinates = await getCoordsForAddress(address);
+
+    console.log(coordinates);
+    const newPlace = await Place.create({
+      place_id: uuid(),
+      title: req.body.title,
+      description: req.body.description,
+      image:
+        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg",
+      lat: coordinates.lat,
+      lng: coordinates.lng,
+      creator: id,
+      address: address,
+    });
+
+    res.status(201).json({ place: newPlace });
   } catch (err) {
-    console.error(err);
-    next(err);
+    const error = new HttpError(
+      "Creating place failed, please try again.",
+      500
+    );
+
+    return next(err);
   }
 
-  const user = await User.findOne({
-    include: [
-      {
-        model: Place,
-        where: {
-          // 로그인한 사람이 되도록
-        },
-      },
-    ],
-  });
-
-  console.log(user.dataValues.Places);
-
-  const newPlace = await Place.create({
-    place_id: uuid(),
-    title: req.body.title,
-    description: req.body.description,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg",
-    lat: coordinates.lat,
-    lng: coordinates.lng,
-    creator: user.dataValues.id, // User 테이블의 id 를 가져와야함
-    address: address,
-  });
-
-  res.status(201).json({ place: newPlace });
+  // 아니면 source Key 를 id 가 아니라,
 };
 
 const updatePlaceById = async (req, res, next) => {
