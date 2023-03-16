@@ -3,10 +3,12 @@ const uuid = require("uuid4");
 const { validationResult } = require("express-validator");
 const getCoordsForAddress = require("../util/location");
 const { Place, User } = require("../models");
+const fs = require("fs");
 
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.placeId;
   let place;
+
   try {
     place = await Place.findOne({
       where: {
@@ -77,8 +79,7 @@ const createPlace = async (req, res, next) => {
       place_id: uuid(),
       title,
       description,
-      image:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Empire_State_Building_%28aerial_view%29.jpg/400px-Empire_State_Building_%28aerial_view%29.jpg",
+      image: req.file.path,
       lat: coordinates.lat,
       lng: coordinates.lng,
       creator: id,
@@ -143,20 +144,15 @@ const deletePlace = async (req, res, next) => {
 
   let place;
   // let filtredPlaces;
-
+  let imagePath;
   try {
     place = await Place.findOne({
       where: {
         id: placeId,
       },
     });
+    imagePath = place.image;
     await place.destroy();
-
-    // filtredPlaces = await Place.findAll({
-    //   where: {
-    //     id: id,
-    //   },
-    // });
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place.",
@@ -164,7 +160,9 @@ const deletePlace = async (req, res, next) => {
     );
     return next(error);
   }
-
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
   res.status(200).json({ message: "Deleted place." });
 };
 

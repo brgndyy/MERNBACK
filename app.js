@@ -5,6 +5,8 @@ const { sequelize } = require("./models");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const session = require("express-session");
+const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
@@ -23,6 +25,9 @@ sequelize
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
+
 app.use(
   session({
     resave: false,
@@ -54,6 +59,11 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+  if (req.file) {
+    fs.unlink(req.file.path, (err) => {
+      console.log(err);
+    });
+  }
   if (res.headerSent) {
     return next(error);
   }
