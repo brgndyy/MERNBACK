@@ -33,6 +33,7 @@ const getPlaceById = async (req, res, next) => {
 
 const getPlacesByUserId = async (req, res, next) => {
   const userId = req.params.userId;
+
   let places;
 
   try {
@@ -55,6 +56,8 @@ const getPlacesByUserId = async (req, res, next) => {
       new HttpError("Could not find a place for the provided user id.", 404)
     );
   }
+
+  console.log(places[0].dataValues);
 
   res.json({ places: places });
 };
@@ -145,6 +148,7 @@ const updatePlaceById = async (req, res, next) => {
 
 const deletePlace = async (req, res, next) => {
   const placeId = req.params.placeId;
+  console.log("placeId : ", placeId);
   // const { id } = req.body;
 
   let place;
@@ -177,7 +181,7 @@ const deletePlace = async (req, res, next) => {
       "You are not allowed to delete this place.",
       401
     );
-    return next(err);
+    return next(error);
   }
 
   fs.unlink(imagePath, (err) => {
